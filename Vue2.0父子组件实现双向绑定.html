@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="format-detection" content="telephone=no">
+		<title>父子组件双向绑定</title>
+		<script src="vue.js"></script>
+	</head>
+	<body>
+		<template id="table">
+			<table style="margin-top: 60px;">
+				<tr><th>子组件数据</th></tr>
+				<tr>
+					<td>my name</td>
+					<td style="width: 100px;border: 1px solid #ccc;">{{myName}}</td>
+					<td>
+						<input type="text" ref="input" :value="myName"  v-on:input="updateValue($event.target.value)">
+					</td>
+				</tr>
+			</table>
+		</template>
+		<div id="app">
+			<!--功能：模拟子组件内部双向绑定-->
+			<!--需求：子组件内部实现双向绑定，可改变自身数据，同时父组件也可改变子组件数据-->
+			<!--思路：
+				1.子组件内部输入的value通过双向绑定传值给父组件，
+				2.父组件获取到该值，再通过props与子组件进行通信，将value值传给子组件内部展示输入值的地方-->
+			<my-table :my-name = "name" v-model="name"></my-table>
+		</div>
+		<script>
+		//全局注册组件
+			Vue.component("my-table",{
+				template:"#table",
+				props:['myName'],
+				methods:{
+					updateValue:function(value){
+						//这一句非常重要，通过 input 事件发出数值
+						this.$emit('input', value)
+					}
+				}
+			});
+			
+			var vm = new Vue({
+				el:"#app",
+				data:function(){
+					return {
+						name:"小黑不黑ha"
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
